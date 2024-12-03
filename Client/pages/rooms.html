@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Salles</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Gestion des Salles</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="users.html">Utilisateurs</a></li>
+                <li><a href="rooms.html">Salles</a></li>
+                <li><a href="reservations.html">Réservations</a></li>
+                <li><button class="logout-button" onclick="logout()">Déconnexion</button></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <div class="container">
+            <section class="frame">
+                <h2>Créer une Salle</h2>
+                <div class="form-group">
+                    <label for="room-name">Nom de la Salle</label>
+                    <input type="text" id="room-name" placeholder="Entrez le nom de la salle">
+                </div>
+                <div class="form-group">
+                    <label for="room-capacity">Capacité</label>
+                    <input type="number" id="room-capacity" placeholder="Entrez la capacité">
+                </div>
+                <div class="form-group">
+                    <label for="room-location">Emplacement</label>
+                    <input type="text" id="room-location" placeholder="Entrez l'emplacement">
+                </div>
+                <div class="form-group">
+                    <button onclick="createRoom()">Créer Salle</button>
+                </div>
+            </section>
+            <section class="frame">
+                <h2>Liste des Salles</h2>
+                <div class="form-group">
+                    <button onclick="getRooms()">Afficher Salles</button>
+                </div>
+                <div class="results" id="room-results"></div>
+            </section>
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2024 Application de Réservation de Salle de Réunion</p>
+    </footer>
+    <script src="../js/scripts.js"></script>
+    <script src="../js/logout.js"></script>
+</body>
+</html>
