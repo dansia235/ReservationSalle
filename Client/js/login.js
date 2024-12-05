@@ -1,11 +1,20 @@
-function login() {
+async function login() {
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
     const errorMessage = document.getElementById('error-message');
 
-    if (username === 'user_db' && password === 'dbpassword') {
+    const response = await fetch('http://localhost:8090/api/auth/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username, password })
+    });
+
+    if (response.ok) {
         window.location.href = 'index.html';
     } else {
-        errorMessage.textContent = 'Nom d\'utilisateur ou mot de passe incorrect';
+        const errorText = await response.text();
+        errorMessage.textContent = errorText;
     }
 }
