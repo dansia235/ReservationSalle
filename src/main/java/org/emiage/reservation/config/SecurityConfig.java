@@ -12,8 +12,7 @@
  package org.emiage.reservation.config;
 
 import org.emiage.reservation.service.UserService;
-import org.emiage.reservation.utils.JWTUtils;
-
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -32,29 +31,27 @@ import org.springframework.context.annotation.Lazy;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private final JWTUtils jwtUtils;
     private final UserService userService;
 
-    public SecurityConfig(JWTUtils jwtUtils, @Lazy UserService userService) {
-        this.jwtUtils = jwtUtils;
+    @Value("${api.key}")
+    private String apiKey;
+
+    public SecurityConfig(@Lazy UserService userService) {
         this.userService = userService;
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        JWTAuthenticationFilter jwtAuthenticationFilter = new JWTAuthenticationFilter(jwtUtils);
-
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .antMatchers("/api/auth/**").permitAll()
+                .antMatchers("/api/auth/**", "/api/users/**", "/api/rooms/**").permitAll()
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            );
-
-        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+            )
+            .addFilterBefore(apiKeyAuthFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -72,5 +69,10 @@ public class SecurityConfig {
     @Bean
     public UserDetailsService userDetailsService() {
         return userService;
+    }
+
+    @Bean
+    public ApiKeyAuthFilter apiKeyAuthFilter() {
+        return new ApiKeyAuthFilter(apiKey);
     }
 }

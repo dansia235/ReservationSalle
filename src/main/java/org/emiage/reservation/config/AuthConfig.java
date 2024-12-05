@@ -13,17 +13,11 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class AuthConfig {
-    @Value("${jwt.secret}")
-    private String jwtSecret;
 
-    @Value("${jwt.expiration}")
-    private long jwtExpiration;
+    @Value("${api.key}")
+    private String apiKey;
 
-    public String getJwtSecret() {
-        return jwtSecret;
-    }
-
-    public long getJwtExpiration() {
-        return jwtExpiration;
+    public String getApiKey() {
+        return apiKey;
     }
 }

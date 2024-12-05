@@ -11,7 +11,6 @@
  package org.emiage.reservation.config;
 
  import org.springframework.beans.factory.annotation.Value;
- import org.springframework.context.annotation.Bean;
  import org.springframework.context.annotation.Configuration;
  
  import javax.annotation.PostConstruct;
@@ -41,34 +40,44 @@
  
      @PostConstruct
      public void initialize() {
-         System.out.println("URL de la base de données : " + databaseUrl);
+         System.out.println("Database URL: " + databaseUrl);
          try (Connection connection = DriverManager.getConnection(databaseUrl, dbUsername, dbPassword)) {
              if (connection != null) {
-                 System.out.println("Connexion à la base de données réussie.");
+                 System.out.println("Connected to the database successfully.");
+                 createDatabaseUser(connection, newDbUsername, newDbPassword);
              }
          } catch (SQLException e) {
-             System.err.println("Échec de la connexion à la base de données : " + e.getMessage());
+             System.err.println("Failed to connect to the database: " + e.getMessage());
          }
      }
  
-     @Bean
-     public void createDatabaseUser() {
-         String checkUserSQL = "SELECT 1 FROM pg_roles WHERE rolname='" + newDbUsername + "';";
-         String createUserSQL = "CREATE USER " + newDbUsername + " WITH PASSWORD '" + newDbPassword + "';";
-         String grantPrivilegesSQL = "GRANT ALL PRIVILEGES ON DATABASE reservation_db TO " + newDbUsername + ";";
+     private void createDatabaseUser(Connection connection, String username, String password) {
+         String checkUserSQL = "SELECT 1 FROM pg_roles WHERE rolname='" + username + "';";
+         String createUserSQL = "CREATE USER " + username + " WITH PASSWORD '" + password + "';";
+         String grantPrivilegesSQL = "GRANT ALL PRIVILEGES ON DATABASE reservation_db TO " + username + ";";
  
-         try (Connection connection = DriverManager.getConnection(databaseUrl, dbUsername, dbPassword);
-              Statement stmt = connection.createStatement();
+         try (Statement stmt = connection.createStatement();
               ResultSet rs = stmt.executeQuery(checkUserSQL)) {
              if (rs.next()) {
-                 System.out.println("L'utilisateur '" + newDbUsername + "' existe déjà.");
+                 System.out.println("User '" + username + "' already exists.");
              } else {
                  stmt.execute(createUserSQL);
                  stmt.execute(grantPrivilegesSQL);
-                 System.out.println("Utilisateur créé avec succès et privilèges accordés.");
+                 System.out.println("User created successfully with all privileges.");
              }
          } catch (SQLException e) {
-             System.err.println("Échec de la création de l'utilisateur ou de l'attribution des privilèges : " + e.getMessage());
+             System.err.println("Error creating user or assigning privileges: " + e.getMessage());
+         }
+     }
+ 
+     // New public method to be called from UserController
+     public void createDatabaseUser(String username, String password) {
+         try (Connection connection = DriverManager.getConnection(databaseUrl, dbUsername, dbPassword)) {
+             if (connection != null) {
+                 createDatabaseUser(connection, username, password);
+             }
+         } catch (SQLException e) {
+             System.err.println("Failed to connect to the database: " + e.getMessage());
          }
      }
  }
