@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestion des Utilisateurs</title>
     <link rel="stylesheet" href="../css/styles.css">
+    <script src="../js/script.js" defer></script>
 </head>
 <body>
     <header>
@@ -22,37 +23,84 @@
     <main>
         <div class="container">
             <section class="frame">
-                <h2>Créer un Utilisateur</h2>
+                <h2>Enregistrer un utilisateur</h2>
+                <form onsubmit="registerUser(username.value, email.value, password.value); return false;">
+                    <div class="form-group">
+                        <label for="username">Nom d'utilisateur</label>
+                        <input type="text" name="username" id="username" placeholder="Nom d'utilisateur" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" name="email" id="email" placeholder="Email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Mot de passe</label>
+                        <input type="password" name="password" id="password" placeholder="Mot de passe" required>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit">Enregistrer</button>
+                    </div>
+                </form>
+            </section>
+            <section class="frame">
+                <h2>Liste des utilisateurs</h2>
+                <form onsubmit="getUserByUsername(username.value); return false;" class="retrieve-form">
+                    <input type="text" name="username" id="retrieve-username" placeholder="Nom d'utilisateur" required>
+                    <button type="submit">Rechercher</button>
+                    <button type="button" onclick="listUsers()">Afficher tous les utilisateurs</button>
+                </form>
                 <div class="form-group">
-                    <label for="username">Nom d'utilisateur</label>
-                    <input type="text" id="username" placeholder="Entrez le nom d'utilisateur">
-                </div>
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" placeholder="Entrez l'email">
-                </div>
-                <div class="form-group">
-                    <label for="password">Mot de passe</label>
-                    <input type="password" id="password" placeholder="Entrez le mot de passe">
-                </div>
-                <div class="form-group">
-                    <button onclick="createUser()">Créer Utilisateur</button>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nom d'utilisateur</th>
+                                <th>Email</th>
+                            </tr>
+                        </thead>
+                        <tbody id="userTableBody">
+                            <!-- Les utilisateurs seront affichés ici -->
+                        </tbody>
+                    </table>
                 </div>
             </section>
             <section class="frame">
-                <h2>Liste des Utilisateurs</h2>
-                <div class="form-group">
-                    <button onclick="getUsers()">Afficher Utilisateurs</button>
-                </div>
-                <div class="results" id="user-results"></div>
+                <h2>Mettre à jour un utilisateur</h2>
+                <form onsubmit="updateUser(username.value, email.value, password.value); return false;">
+                    <div class="form-group">
+                        <label for="username">Nom d'utilisateur</label>
+                        <input type="text" name="username" id="update-username" placeholder="Nom d'utilisateur" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" name="email" id="update-email" placeholder="Email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Mot de passe</label>
+                        <input type="password" name="password" id="update-password" placeholder="Mot de passe" required>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit">Mettre à jour</button>
+                    </div>
+                </form>
+            </section>
+            <section class="frame">
+                <h2>Supprimer un utilisateur</h2>
+                <form onsubmit="deleteUser(username.value); return false;">
+                    <div class="form-group">
+                        <label for="username">Nom d'utilisateur</label>
+                        <input type="text" name="username" id="delete-username" placeholder="Nom d'utilisateur" required>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit">Supprimer</button>
+                    </div>
+                </form>
             </section>
         </div>
     </main>
     <footer>
         <p>&copy; 2024 Application de Réservation de Salle de Réunion</p>
     </footer>
-    <div id="notification" class="notification"></div>
-    <script src="../js/scripts.js"></script>
+    <script src="../js/script.js"></script>
     <script src="../js/logout.js"></script>
 </body>
 </html>

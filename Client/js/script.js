@@ -1,232 +1,129 @@
-const apiUrl = 'http://localhost:8090/api/users';
+const API_BASE_URL = "http://localhost:8090/api";
+const API_HEADERS = {
+    "Content-Type": "application/json",
+    "x-api-key": "lUMaccz+6n5lluwz24aw4HTyXE9vIihx9ah9pKfR82A="
+};
 
-async function createUser() {
-    const username = document.getElementById('username').value;
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
+document.addEventListener('DOMContentLoaded', () => {
+    listUsers();  // Affiche la liste des utilisateurs dès l'ouverture de la page
+});
 
-    const response = await fetch(apiUrl + '/register', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ username, email, password })
-    });
+async function registerUser(username, email, password) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/users/register`, {
+            method: "POST",
+            headers: API_HEADERS,
+            body: JSON.stringify({ username, email, password })
+        });
 
-    const result = await response.json();
-    showNotification('Utilisateur créé avec succès');
-    getUsers();
+        if (!response.ok) {
+            const errorText = await response.text();
+            try {
+                const errorData = JSON.parse(errorText);
+                throw new Error(`Erreur lors de l'enregistrement : ${errorData.message}`);
+            } catch (e) {
+                throw new Error('Le nom d\'utilisateur ou l\'adresse email existe déjà.');
+            }
+        }
+
+        const data = await response.json();
+        console.log("Utilisateur enregistré :", data);
+        alert(`Utilisateur enregistré : ${data.username}`);
+        listUsers();  // Rafraîchir la liste des utilisateurs après l'enregistrement
+    } catch (error) {
+        console.error("Erreur lors de l'enregistrement :", error);
+        alert(`Erreur lors de l'enregistrement : ${error.message}`);
+    }
 }
 
-async function getUsers() {
-    const response = await fetch(apiUrl, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json'
+async function getUserByUsername(username) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/users/${username}`, {
+            method: "GET",
+            headers: API_HEADERS
+        });
+        if (!response.ok) {
+            throw new Error('Erreur lors de la récupération');
         }
-    });
-
-    const result = await response.json();
-    displayUsers(result);
+        const data = await response.json();
+        console.log("Utilisateur récupéré :", data);
+        displayUsers([data]);  // Affichez uniquement l'utilisateur récupéré dans le tableau
+    } catch (error) {
+        console.error("Erreur lors de la récupération :", error);
+        alert(`Erreur lors de la récupération : ${error.message}`);
+    }
 }
 
-async function deleteUser(id) {
-    const response = await fetch(apiUrl + '/' + id, {
-        method: 'DELETE',
-        headers: {
-            'Content-Type': 'application/json'
+async function listUsers() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/users`, {
+            method: "GET",
+            headers: API_HEADERS
+        });
+        if (!response.ok) {
+            throw new Error('Erreur lors de la récupération de la liste');
         }
-    });
-
-    if (response.status === 204) {
-        showNotification('Utilisateur supprimé avec succès');
-        getUsers();
+        const data = await response.json();
+        console.log("Liste des utilisateurs :", data);
+        displayUsers(data);  // Affichez les utilisateurs dans le tableau
+    } catch (error) {
+        console.error("Erreur lors de la récupération de la liste :", error);
+        alert(`Erreur lors de la récupération de la liste : ${error.message}`);
     }
 }
 
 function displayUsers(users) {
-    const userResults = document.getElementById('user-results');
-    userResults.innerHTML = `
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nom d'utilisateur</th>
-                    <th>Email</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${users.map(user => `
-                    <tr>
-                        <td>${user.id}</td>
-                        <td>${user.username}</td>
-                        <td>${user.email}</td>
-                        <td>
-                            <button onclick="deleteUser(${user.id})">Supprimer</button>
-                        </td>
-                    </tr>
-                `).join('')}
-            </tbody>
-        </table>
-    `;
-}
+    const tableBody = document.getElementById("userTableBody");
+    tableBody.innerHTML = "";  // Efface le contenu actuel du tableau
 
-function showNotification(message) {
-    const notification = document.getElementById('notification');
-    notification.textContent = message;
-    notification.classList.add('show');
-    setTimeout(() => {
-        notification.classList.remove('show');
-    }, 3000);
-}
+    users.forEach(user => {
+        const row = document.createElement("tr");
+        const usernameCell = document.createElement("td");
+        const emailCell = document.createElement("td");
 
-async function registerUser(username, email, password) {
-    const response = await fetch('/api/users/register', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ username, email, password })
+        usernameCell.textContent = user.username;
+        emailCell.textContent = user.email;
+
+        row.appendChild(usernameCell);
+        row.appendChild(emailCell);
+        tableBody.appendChild(row);
     });
-    if (!response.ok) {
-        throw new Error('Failed to register user');
-    }
-    return await response.json();
 }
 
-
-async function updateUser(id, userData) {
-    const response = await fetch(`/api/users/${id}`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(userData)
-    });
-    if (!response.ok) {
-        throw new Error('Failed to update user');
-    }
-    return await response.json();
-}
-
-
-async function deleteUser(id) {
-    const response = await fetch(`/api/users/${id}`, {
-        method: 'DELETE',
-        headers: {
-            'Content-Type': 'application/json'
+async function updateUser(username, email, password) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/users/${username}`, {
+            method: "PUT",
+            headers: API_HEADERS,
+            body: JSON.stringify({ email, password })
+        });
+        if (!response.ok) {
+            throw new Error('Erreur lors de la mise à jour');
         }
-    });
-    if (!response.ok) {
-        throw new Error('Failed to delete user');
+        const data = await response.json();
+        console.log("Utilisateur mis à jour :", data);
+        alert(`Utilisateur mis à jour : ${JSON.stringify(data)}`);
+        listUsers();  // Rafraîchir la liste des utilisateurs après la mise à jour
+    } catch (error) {
+        console.error("Erreur lors de la mise à jour :", error);
+        alert(`Erreur lors de la mise à jour : ${error.message}`);
     }
 }
 
-
-async function updateRoom(id, roomData) {
-    const response = await fetch(`/api/rooms/${id}`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(roomData)
-    });
-    if (!response.ok) {
-        throw new Error('Failed to update room');
-    }
-    return await response.json();
-}
-
-async function deleteRoom(id) {
-    const response = await fetch(`/api/rooms/${id}`, {
-        method: 'DELETE',
-        headers: {
-            'Content-Type': 'application/json'
+async function deleteUser(username) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/users/${username}`, {
+            method: "DELETE",
+            headers: API_HEADERS
+        });
+        if (!response.ok) {
+            throw new Error('Erreur lors de la suppression');
         }
-    });
-    if (!response.ok) {
-        throw new Error('Failed to delete room');
+        console.log("Utilisateur supprimé :", response.status);
+        alert(`Utilisateur supprimé (Nom d'utilisateur: ${username})`);
+        listUsers();  // Rafraîchir la liste des utilisateurs après la suppression
+    } catch (error) {
+        console.error("Erreur lors de la suppression :", error);
+        alert(`Erreur lors de la suppression : ${error.message}`);
     }
-}
-
-async function getAllRooms() {
-    const response = await fetch('/api/rooms', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    });
-    if (!response.ok) {
-        throw new Error('Failed to fetch rooms');
-    }
-    return await response.json();
-}
-
-async function createReservation(reservationData) {
-    const response = await fetch('/api/reservations', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(reservationData)
-    });
-    if (!response.ok) {
-        throw new Error('Failed to create reservation');
-    }
-    return await response.json();
-}
-
-async function updateReservation(id, reservationData) {
-    const response = await fetch(`/api/reservations/${id}`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(reservationData)
-    });
-    if (!response.ok) {
-        throw new Error('Failed to update reservation');
-    }
-    return await response.json();
-}
-
-
-async function getAllReservations() {
-    const response = await fetch('/api/reservations', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    });
-    if (!response.ok) {
-        throw new Error('Failed to fetch reservations');
-    }
-    return await response.json();
-}
-
-async function getRoomById(id) {
-    const response = await fetch(`/api/rooms/${id}`, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    });
-    if (!response.ok) {
-        throw new Error('Room not found');
-    }
-    return await response.json();
-}
-
-async function getReservationsByRoomId(id) {
-    const response = await fetch(`/api/rooms/${id}/reservations`, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    });
-    if (!response.ok) {
-        throw new Error('Failed to fetch reservations for room');
-    }
-    return await response.json();
 }

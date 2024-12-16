@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestion des Réservations</title>
     <link rel="stylesheet" href="../css/styles.css">
+    <script src="../js/reservationController.js" defer></script>
 </head>
 <body>
     <header>
@@ -22,40 +23,81 @@
     <main>
         <div class="container">
             <section class="frame">
-                <h2>Créer une Réservation</h2>
-                <div class="form-group">
-                    <label for="reservation-user-id">ID de l'Utilisateur</label>
-                    <input type="number" id="reservation-user-id" placeholder="Entrez l'ID de l'utilisateur">
-                </div>
-                <div class="form-group">
-                    <label for="reservation-room-id">ID de la Salle</label>
-                    <input type="number" id="reservation-room-id" placeholder="Entrez l'ID de la salle">
-                </div>
-                <div class="form-group">
-                    <label for="reservation-start-date">Date de Début</label>
-                    <input type="datetime-local" id="reservation-start-date">
-                </div>
-                <div class="form-group">
-                    <label for="reservation-end-date">Date de Fin</label>
-                    <input type="datetime-local" id="reservation-end-date">
-                </div>
-                <div class="form-group">
-                    <button onclick="createReservation()">Créer Réservation</button>
-                </div>
+                <h2>Créer une réservation</h2>
+                <form onsubmit="createReservation(event)">
+                    <div class="form-group">
+                        <label for="create-name">Nom</label>
+                        <input type="text" id="create-name" placeholder="Nom" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="create-description">Description</label>
+                        <input type="text" id="create-description" placeholder="Description" required>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit">Créer</button>
+                    </div>
+                </form>
             </section>
             <section class="frame">
                 <h2>Liste des Réservations</h2>
+                <form onsubmit="getReservationById(event)" class="retrieve-form">
+                    <input type="number" id="retrieve-id" placeholder="ID de la réservation" required>
+                    <button type="submit">Rechercher</button>
+                    <button type="button" onclick="getAllReservations()">Afficher toutes les réservations</button>
+                </form>
                 <div class="form-group">
-                    <button onclick="getReservations()">Afficher Réservations</button>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nom de la réservation</th>
+                                <th>Nom de la salle</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reservationTableBody">
+                            <!-- Les réservations seront affichées ici -->
+                        </tbody>
+                    </table>
                 </div>
-                <div class="results" id="reservation-results"></div>
+            </section>
+            <section class="frame">
+                <h2>Mettre à jour une réservation</h2>
+                <form onsubmit="updateReservation(event)">
+                    <div class="form-group">
+                        <label for="update-id">ID de la Réservation</label>
+                        <input type="number" id="update-id" placeholder="ID de la réservation" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="update-name">Nom</label>
+                        <input type="text" id="update-name" placeholder="Nom" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="update-description">Description</label>
+                        <input type="text" id="update-description" placeholder="Description" required>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit">Mettre à jour</button>
+                    </div>
+                </form>
+            </section>
+            <section class="frame">
+                <h2>Supprimer une réservation</h2>
+                <form onsubmit="deleteReservation(event)">
+                    <div class="form-group">
+                        <label for="delete-id">ID de la Réservation</label>
+                        <input type="number" id="delete-id" placeholder="ID de la réservation" required>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit">Supprimer</button>
+                    </div>
+                </form>
             </section>
         </div>
     </main>
     <footer>
         <p>&copy; 2024 Application de Réservation de Salle de Réunion</p>
     </footer>
-    <script src="../js/scripts.js"></script>
+    <script src="../js/reservationController.js"></script>
     <script src="../js/logout.js"></script>
 </body>
 </html>

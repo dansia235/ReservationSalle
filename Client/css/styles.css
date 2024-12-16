@@ -53,6 +53,7 @@ main {
 
 .container {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     width: 100%;
     max-width: 1200px;
@@ -64,18 +65,15 @@ main {
     margin: 10px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    flex: 1;
+    flex: 1 1 45%;
     display: flex;
     flex-direction: column;
-}
-
-.login-frame {
-    max-width: 400px;
-    width: 100%;
+    min-width: 300px;
 }
 
 .frame h2 {
     margin-top: 0;
+    font-size: 1.5em;
 }
 
 .form-group {
@@ -91,6 +89,8 @@ main {
     width: 100%;
     padding: 8px;
     box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 5px;
 }
 
 .form-group button {
@@ -98,6 +98,7 @@ main {
     background-color: #007BFF;
     color: #fff;
     border: none;
+    border-radius: 5px;
     cursor: pointer;
 }
 
@@ -105,35 +106,30 @@ main {
     background-color: #0056b3;
 }
 
-.results {
+.retrieve-form {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
     margin-top: 20px;
 }
 
-.results pre {
-    background-color: #f8f9fa;
-    padding: 10px;
-    border: 1px solid #dee2e6;
+table, th, td {
+    border: 1px solid #ddd;
 }
 
-.welcome-container { 
-    display: flex; 
-    justify-content: center; 
-    align-items: center; 
-    height: 100%; 
-    width: 100%; 
-} 
+th, td {
+    padding: 10px;
+    text-align: left;
+}
 
-.welcome-message { 
-    background-color: #007BFF; 
-    color: #fff; 
-    padding: 50px; 
-    border-radius: 10px; 
-    text-align: center; 
-} 
-
-.welcome-message h2 { 
-    font-size: 2.5em; 
-    margin: 0; 
+th {
+    background-color: #f2f2f2;
 }
 
 footer {
