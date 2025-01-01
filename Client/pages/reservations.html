@@ -30,12 +30,14 @@
                             <label for="create-roomId" class="required">Salle</label>
                             <select id="create-roomId" required>
                                 <option value="" disabled selected>Sélectionnez une salle</option>
+                                <!-- Les options des salles seront insérées ici -->
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="create-userId">Utilisateur</label>
+                            <label for="create-userId" class="required">Utilisateur</label>
                             <select id="create-userId" required>
                                 <option value="" disabled selected>Sélectionnez un utilisateur</option>
+                                <!-- Les options des utilisateurs seront insérées ici -->
                             </select>
                         </div>
                         <div class="form-group">
@@ -63,8 +65,8 @@
                     <h2>Supprimer une Réservation</h2>
                     <form id="deleteReservationForm" onsubmit="deleteReservation(event)">
                         <div class="form-group">
-                            <label for="delete-code">Code de la Réservation</label>
-                            <input type="text" id="delete-code" placeholder="Code de la réservation" required>
+                            <label for="delete-reservation-id">ID de la Réservation</label>
+                            <input type="text" id="delete-reservation-id" placeholder="ID de la réservation" required>
                         </div>
                         <div class="form-group">
                             <button type="submit">Supprimer</button>
@@ -76,15 +78,15 @@
                 <section class="frame">
                     <h2>Liste des Réservations</h2>
                     <form class="retrieve-form">
-                        <input type="text" id="retrieve-code" placeholder="Code de la réservation">
-                        <button type="button" onclick="getReservationByCode()">Rechercher</button>
+                        <input type="text" id="retrieve-id" placeholder="ID de la réservation">
+                        <button type="button" onclick="getReservationById()">Rechercher</button>
                         <button type="button" onclick="getAllReservations()">Afficher toutes les réservations</button>
                     </form>
                     <div class="form-group">
                         <table>
                             <thead>
                                 <tr>
-                                    <th>Code</th>
+                                    <th>ID</th>
                                     <th>Nom d'utilisateur</th>
                                     <th>Nom de la salle</th>
                                     <th>Date</th>
