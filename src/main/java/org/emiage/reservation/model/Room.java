@@ -7,7 +7,9 @@
  *
  * @author Dansia
  */
-package org.emiage.reservation.model;
+
+
+ package org.emiage.reservation.model;
 
 import javax.persistence.*;
 

@@ -1,0 +1,103 @@
+/* reservations.css */
+
+/* Use existing styles for header and footer from styles.css */
+
+/* Layout for the main container */
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+}
+
+/* Sidebar sections (Create and Delete Reservation) */
+.sidebar {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.sidebar .frame {
+    flex: 1;
+    min-width: 300px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+}
+
+/* Main content section for reservations list */
+.main-content {
+    width: 100%;
+}
+
+.main-content .frame {
+    width: 100%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+}
+
+/* Table styling for reservation list */
+.main-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.main-content th,
+.main-content td {
+    border: 1px solid #ddd;
+    text-align: left;
+    padding: 8px;
+}
+
+.main-content th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+}
+
+.main-content tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.main-content tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Form elements styling */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea,
+.form-group button {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.form-group button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.form-group button:hover {
+    background-color: #0056b3;
+}

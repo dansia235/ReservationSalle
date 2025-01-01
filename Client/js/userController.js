@@ -43,7 +43,12 @@ async function getUserByUsername(username) {
             headers: API_HEADERS
         });
         if (!response.ok) {
-            throw new Error('Erreur lors de la récupération');
+            const errorText = await response.text();
+            if (errorText === "Utilisateur non enregistré") {
+                throw new Error('Utilisateur non enregistré');
+            } else {
+                throw new Error('Erreur lors de la récupération');
+            }
         }
         const data = await response.json();
         console.log("Utilisateur récupéré :", data);
@@ -106,24 +111,7 @@ async function updateUser(username, email, password) {
         listUsers();  // Rafraîchir la liste des utilisateurs après la mise à jour
     } catch (error) {
         console.error("Erreur lors de la mise à jour :", error);
-        alert(`Erreur lors de la mise à jour : ${error.message}`);
+        alert('Erreur lors de la mise à jour');
     }
 }
 
-async function deleteUser(username) {
-    try {
-        const response = await fetch(`${API_BASE_URL}/users/${username}`, {
-            method: "DELETE",
-            headers: API_HEADERS
-        });
-        if (!response.ok) {
-            throw new Error('Erreur lors de la suppression');
-        }
-        console.log("Utilisateur supprimé :", response.status);
-        alert(`Utilisateur supprimé (Nom d'utilisateur: ${username})`);
-        listUsers();  // Rafraîchir la liste des utilisateurs après la suppression
-    } catch (error) {
-        console.error("Erreur lors de la suppression :", error);
-        alert(`Erreur lors de la suppression : ${error.message}`);
-    }
-}

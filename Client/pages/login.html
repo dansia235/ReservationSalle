@@ -4,32 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connexion</title>
-    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/home.css">
+    <link rel="stylesheet" href="../css/login.css">
+
 </head>
 <body>
-    <header>
-        <h1>Connexion</h1>
-    </header>
-    <main>
-        <section class="frame login-frame">
-            <h2>Veuillez vous connecter</h2>
-            <div class="form-group">
-                <label for="username">Nom d'utilisateur</label>
-                <input type="text" id="username" placeholder="Entrez le nom d'utilisateur">
+
+    <div class="login-main-container">
+        <div div class="container login-title-container">
+            <div class="login-title">
+                <h1>Application de Gestion de Salles</h1>
             </div>
-            <div class="form-group">
-                <label for="password">Mot de passe</label>
-                <input type="password" id="password" placeholder="Entrez le mot de passe">
-            </div>
-            <div class="form-group">
-                <button onclick="login()">Se connecter</button>
-            </div>
-            <div id="error-message" class="error-message"></div>
-        </section>
-    </main>
-    <footer>
-        <p>&copy; 2024 Application de Réservation de Salle de Réunion</p>
-    </footer>
+        </div>
+        <div class="login-container">
+    
+            <form onsubmit="login(); return false;">
+                <input type="text" id="username" placeholder="Nom d'utilisateur" required>
+                <input type="password" id="password" placeholder="Mot de passe" required>
+                <button type="submit">Connexion</button>
+            </form>
+            <p id="error-message" class="error-message"></p>
+        </div>
+
+    </div>
+    
     <script src="../js/login.js"></script>
 </body>
 </html>

@@ -22,85 +22,89 @@
     </header>
     <main>
         <div class="container">
-            <section class="frame">
-                <h2>Créer une Salle</h2>
-                <form onsubmit="createRoom(event)">
+            <div class="sidebar">
+                <section class="frame">
+                    <h2>Créer une Salle</h2>
+                    <form onsubmit="createRoom(event)">
+                        <div class="form-group">
+                            <label for="room-name">Nom de la Salle</label>
+                            <input type="text" id="room-name" placeholder="Entrez le nom de la salle" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="room-capacity">Capacité</label>
+                            <input type="number" id="room-capacity" placeholder="Entrez la capacité" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="room-location">Emplacement</label>
+                            <input type="text" id="room-location" placeholder="Entrez l'emplacement" required>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit">Créer Salle</button>
+                        </div>
+                    </form>
+                </section>
+                <section class="frame">
+                    <h2>Mettre à jour une Salle</h2>
+                    <form onsubmit="updateRoom(event)">
+                        <div class="form-group">
+                            <label for="update-room-id">ID de la Salle</label>
+                            <input type="number" id="update-room-id" placeholder="ID de la salle" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="update-room-name">Nom</label>
+                            <input type="text" id="update-room-name" placeholder="Nom" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="update-room-capacity">Capacité</label>
+                            <input type="number" id="update-room-capacity" placeholder="Capacité" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="update-room-location">Emplacement</label>
+                            <input type="text" id="update-room-location" placeholder="Emplacement" required>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit">Mettre à jour</button>
+                        </div>
+                    </form>
+                </section>
+                <section class="frame">
+                    <h2>Supprimer une Salle</h2>
+                    <form onsubmit="deleteRoom(event)">
+                        <div class="form-group">
+                            <label for="delete-room-id">ID de la Salle</label>
+                            <input type="number" id="delete-room-id" placeholder="ID de la salle" required>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit">Supprimer</button>
+                        </div>
+                    </form>
+                </section>
+            </div>
+            <div class="main-content">
+                <section class="frame">
+                    <h2>Liste des Salles</h2>
+                    <form onsubmit="getRoomById(event)" class="retrieve-form">
+                        <input type="number" id="retrieve-room-id" placeholder="ID de la salle" required>
+                        <button type="submit">Rechercher</button>
+                        <button type="button" onclick="getAllRooms()">Afficher toutes les salles</button>
+                    </form>
                     <div class="form-group">
-                        <label for="room-name">Nom de la Salle</label>
-                        <input type="text" id="room-name" placeholder="Entrez le nom de la salle" required>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nom</th>
+                                    <th>Capacité</th>
+                                    <th>Emplacement</th>
+                                </tr>
+                            </thead>
+                            <tbody id="roomTableBody">
+                                <!-- Les salles seront affichées ici -->
+                            </tbody>
+                        </table>
                     </div>
-                    <div class="form-group">
-                        <label for="room-capacity">Capacité</label>
-                        <input type="number" id="room-capacity" placeholder="Entrez la capacité" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="room-location">Emplacement</label>
-                        <input type="text" id="room-location" placeholder="Entrez l'emplacement" required>
-                    </div>
-                    <div class="form-group">
-                        <button type="submit">Créer Salle</button>
-                    </div>
-                </form>
-            </section>
-            <section class="frame">
-                <h2>Liste des Salles</h2>
-                <form onsubmit="getRoomById(event)" class="retrieve-form">
-                    <input type="number" id="retrieve-room-id" placeholder="ID de la salle" required>
-                    <button type="submit">Rechercher</button>
-                    <button type="button" onclick="getAllRooms()">Afficher toutes les salles</button>
-                </form>
-                <div class="form-group">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Nom</th>
-                                <th>Capacité</th>
-                                <th>Emplacement</th>
-                            </tr>
-                        </thead>
-                        <tbody id="roomTableBody">
-                            <!-- Les salles seront affichées ici -->
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-            <section class="frame">
-                <h2>Mettre à jour une Salle</h2>
-                <form onsubmit="updateRoom(event)">
-                    <div class="form-group">
-                        <label for="update-room-id">ID de la Salle</label>
-                        <input type="number" id="update-room-id" placeholder="ID de la salle" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="update-room-name">Nom</label>
-                        <input type="text" id="update-room-name" placeholder="Nom" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="update-room-capacity">Capacité</label>
-                        <input type="number" id="update-room-capacity" placeholder="Capacité" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="update-room-location">Emplacement</label>
-                        <input type="text" id="update-room-location" placeholder="Emplacement" required>
-                    </div>
-                    <div class="form-group">
-                        <button type="submit">Mettre à jour</button>
-                    </div>
-                </form>
-            </section>
-            <section class="frame">
-                <h2>Supprimer une Salle</h2>
-                <form onsubmit="deleteRoom(event)">
-                    <div class="form-group">
-                        <label for="delete-room-id">ID de la Salle</label>
-                        <input type="number" id="delete-room-id" placeholder="ID de la salle" required>
-                    </div>
-                    <div class="form-group">
-                        <button type="submit">Supprimer</button>
-                    </div>
-                </form>
-            </section>
+                </section>
+            </div>
         </div>
     </main>
     <footer>

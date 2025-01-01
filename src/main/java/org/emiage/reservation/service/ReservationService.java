@@ -10,17 +10,18 @@
 
  package org.emiage.reservation.service;
 
- import org.emiage.reservation.exceptions.ReservationConflictException;
+ import org.emiage.reservation.dto.ReservationResponseDTO;
  import org.emiage.reservation.model.Reservation;
  import org.emiage.reservation.model.Room;
- import org.emiage.reservation.model.User;
  import org.emiage.reservation.repository.ReservationRepository;
  import org.springframework.beans.factory.annotation.Autowired;
  import org.springframework.stereotype.Service;
  
+ import java.text.SimpleDateFormat;
  import java.util.Date;
  import java.util.List;
  import java.util.Optional;
+ import java.util.stream.Collectors;
  
  @Service
  public class ReservationService {
@@ -32,133 +33,89 @@
          this.reservationRepository = reservationRepository;
      }
  
-     /**
-      * Enregistre une nouvelle réservation après avoir vérifié la disponibilité de la salle.
-      *
-      * @param reservation Détails de la réservation
-      * @return La réservation enregistrée
-      * @throws ReservationConflictException si la salle est déjà réservée pour la période donnée
-      */
      public Reservation save(Reservation reservation) {
-         if (!isRoomAvailable(reservation.getRoom(), reservation.getStartDate(), reservation.getEndDate())) {
-             throw new ReservationConflictException("La salle est déjà réservée pour la période sélectionnée.");
-         }
          return reservationRepository.save(reservation);
      }
  
-     /**
-      * Recherche une réservation par son identifiant.
-      *
-      * @param id l'identifiant de la réservation
-      * @return un Optional contenant la réservation si trouvée, sinon vide
-      */
-     public Optional<Reservation> findById(Long id) {
-         return reservationRepository.findById(id);
+     public Optional<ReservationResponseDTO> findById(Long id) {
+         Optional<Reservation> reservationOpt = reservationRepository.findById(id);
+         return reservationOpt.map(this::convertToDto);
      }
  
-     /**
-      * Récupère toutes les réservations.
-      *
-      * @return une liste de toutes les réservations
-      */
-     public List<Reservation> findAll() {
-         return reservationRepository.findAll();
+     public List<ReservationResponseDTO> findAll() {
+         List<Reservation> reservations = reservationRepository.findAll();
+         return reservations.stream()
+                 .map(this::convertToDto)
+                 .collect(Collectors.toList());
      }
  
-     /**
-      * Met à jour une réservation existante.
-      *
-      * @param id          l'identifiant de la réservation à mettre à jour
-      * @param reservation les nouvelles informations de la réservation
-      * @return la réservation mise à jour
-      */
-     public Reservation update(Long id, Reservation reservation) {
+     public List<ReservationResponseDTO> findAllWithDetails() {
+         List<Reservation> reservations = reservationRepository.findAllWithDetails();
+         return reservations.stream()
+                 .map(this::convertToDto)
+                 .collect(Collectors.toList());
+     }
+ 
+     public List<ReservationResponseDTO> findByRoomId(Long roomId) {
+         List<Reservation> reservations = reservationRepository.findByRoomId(roomId);
+         return reservations.stream()
+                 .map(this::convertToDto)
+                 .collect(Collectors.toList());
+     }
+ 
+     public Reservation updateById(Long id, Reservation reservation) {
          Optional<Reservation> existingReservation = reservationRepository.findById(id);
          if (existingReservation.isPresent()) {
              Reservation updatedReservation = existingReservation.get();
-             updatedReservation.setStartDate(reservation.getStartDate());
-             updatedReservation.setEndDate(reservation.getEndDate());
+             updatedReservation.setReservationDate(reservation.getReservationDate());
+             updatedReservation.setStartTime(reservation.getStartTime());
+             updatedReservation.setEndTime(reservation.getEndTime());
              updatedReservation.setRoom(reservation.getRoom());
              updatedReservation.setUser(reservation.getUser());
-             // Mettez à jour d'autres champs si nécessaire
+             updatedReservation.setPurpose(reservation.getPurpose());
              return reservationRepository.save(updatedReservation);
          } else {
-             // Gérer le cas où la réservation n'est pas trouvée
-             return null;
+             throw new IllegalArgumentException("Réservation non trouvée pour l'ID fourni");
          }
      }
  
-     /**
-      * Supprime une réservation par son identifiant.
-      *
-      * @param id l'identifiant de la réservation à supprimer
-      */
-     public void delete(Long id) {
-         reservationRepository.deleteById(id);
+     public void deleteById(Long id) {
+         Optional<Reservation> reservation = reservationRepository.findById(id);
+         reservation.ifPresent(reservationRepository::delete);
      }
  
      /**
       * Vérifie si une salle est disponible pour une période donnée.
       *
       * @param room      La salle à vérifier
-      * @param startDate Date de début
-      * @param endDate   Date de fin
+      * @param startTime La date et l'heure de début
+      * @param endTime   La date et l'heure de fin
       * @return true si la salle est disponible, sinon false
       */
-     public boolean isRoomAvailable(Room room, Date startDate, Date endDate) {
-         List<Reservation> reservations = reservationRepository.findByRoomIdAndStartDateBetweenOrEndDateBetween(
-                 room.getId(), startDate, endDate, startDate, endDate);
+     public boolean isRoomAvailable(Room room, Date startTime, Date endTime) {
+         List<Reservation> reservations = reservationRepository.findByRoomIdAndTimeRange(room.getId(), startTime, endTime);
          return reservations.isEmpty();
      }
  
-     /**
-      * Annule une réservation par son identifiant.
-      *
-      * @param reservationId Identifiant de la réservation
-      */
-     public void cancelReservation(Long reservationId) {
-         reservationRepository.deleteById(reservationId);
+     private ReservationResponseDTO convertToDto(Reservation reservation) {
+         ReservationResponseDTO dto = new ReservationResponseDTO();
+         dto.setId(reservation.getId());
+         dto.setReservationDate(formatDate(reservation.getReservationDate()));
+         dto.setStartTime(formatTime(reservation.getStartTime()));
+         dto.setEndTime(formatTime(reservation.getEndTime()));
+         dto.setRoomName(reservation.getRoom().getName());
+         dto.setUsername(reservation.getUser().getUsername());
+         dto.setPurpose(reservation.getPurpose());
+         return dto;
      }
  
-     /**
-      * Obtient toutes les réservations d'un utilisateur spécifique.
-      *
-      * @param user L'utilisateur
-      * @return Liste des réservations de l'utilisateur
-      */
-     public List<Reservation> getReservationsByUser(User user) {
-         return reservationRepository.findByUserId(user.getId());
+     private String formatDate(Date date) {
+         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+         return sdf.format(date);
      }
  
-     /**
-      * Obtient toutes les réservations pour une salle spécifique.
-      *
-      * @param room La salle
-      * @return Liste des réservations pour la salle
-      */
-     public List<Reservation> getReservationsByRoom(Room room) {
-         return reservationRepository.findByRoomId(room.getId());
+     private String formatTime(Date time) {
+         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+         return sdf.format(time);
      }
- 
-     /**
-      * Obtient toutes les réservations pour une salle spécifique par son identifiant.
-      *
-      * @param roomId L'identifiant de la salle
-      * @return Liste des réservations pour la salle
-      */
-     public List<Reservation> findByRoomId(Long roomId) {
-         return reservationRepository.findByRoomId(roomId);
-     }
- 
-     /**
-      * Obtient toutes les réservations entre deux dates spécifiques.
-      *
-      * @param startDate Date de début
-      * @param endDate   Date de fin
-      * @return Liste des réservations dans la période donnée
-      */
-     public List<Reservation> getReservationsBetweenDates(Date startDate, Date endDate) {
-         return reservationRepository.findByStartDateBetween(startDate, endDate);
-     }
- }
- 
+ } 

@@ -9,6 +9,7 @@ package org.emiage.reservation.service;
  * @author Dansia
  */
 
+
  import org.emiage.reservation.exceptions.ResourceNotFoundException;
  import org.emiage.reservation.model.Room;
  import org.emiage.reservation.repository.RoomRepository;
@@ -16,6 +17,7 @@ package org.emiage.reservation.service;
  import org.springframework.stereotype.Service;
  
  import java.util.List;
+ import java.util.Optional;
  
  @Service
  public class RoomService {
@@ -53,8 +55,8 @@ package org.emiage.reservation.service;
          return roomRepository.findAll();
      }
  
-     public Room findById(Long id) {
-         return roomRepository.findById(id)
-                 .orElseThrow(() -> new ResourceNotFoundException("Salle non trouvée pour l'id :: " + id));
+     public Optional<Room> findById(Long id) {
+         return roomRepository.findById(id);
      }
  }
+ 

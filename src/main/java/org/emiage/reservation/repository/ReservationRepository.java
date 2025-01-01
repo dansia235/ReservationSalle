@@ -9,10 +9,16 @@ package org.emiage.reservation.repository;
  * @author Dansia
  */
 
+
+
  import org.emiage.reservation.model.Reservation;
  import org.springframework.data.jpa.repository.JpaRepository;
+ import org.springframework.data.jpa.repository.Query;
+ import org.springframework.data.repository.query.Param;
+ 
  import java.util.Date;
  import java.util.List;
+ import java.util.Optional;
  
  /**
   * Dépôt pour l'entité Reservation.
@@ -36,31 +42,35 @@ package org.emiage.reservation.repository;
      List<Reservation> findByRoomId(Long roomId);
  
      /**
-      * Recherche les réservations dont la date de début est entre startDate et endDate.
-      *
-      * @param startDate la date de début de l'intervalle
-      * @param endDate   la date de fin de l'intervalle
-      * @return une liste de réservations correspondant aux critères
-      */
-     List<Reservation> findByStartDateBetween(Date startDate, Date endDate);
- 
-     /**
-      * Recherche les réservations dont la date de fin est entre startDate et endDate.
-      *
-      * @param startDate la date de début de l'intervalle
-      * @param endDate   la date de fin de l'intervalle
-      * @return une liste de réservations correspondant aux critères
-      */
-     List<Reservation> findByEndDateBetween(Date startDate, Date endDate);
- 
-     /**
-      * Recherche les réservations pour une salle spécifique dont la date de début ou de fin est entre startDate et endDate.
+      * Recherche les réservations dont la date de début ou de fin est entre startTime et endTime.
       *
       * @param roomId    l'identifiant de la salle
-      * @param startDate la date de début de l'intervalle
-      * @param endDate   la date de fin de l'intervalle
+      * @param startTime la date de début de l'intervalle
+      * @param endTime   la date de fin de l'intervalle
       * @return une liste de réservations correspondant aux critères
       */
-     List<Reservation> findByRoomIdAndStartDateBetweenOrEndDateBetween(
-             Long roomId, Date startDate, Date endDate, Date startDate2, Date endDate2);
+     @Query("SELECT r FROM Reservation r WHERE r.room.id = :roomId AND (r.startTime BETWEEN :startTime AND :endTime OR r.endTime BETWEEN :startTime AND :endTime)")
+     List<Reservation> findByRoomIdAndTimeRange(
+             @Param("roomId") Long roomId,
+             @Param("startTime") Date startTime,
+             @Param("endTime") Date endTime
+     );
+ 
+     /**
+      * Requête personnalisée pour récupérer toutes les réservations avec des détails utilisateur et salle.
+      *
+      * @return une liste contenant les informations détaillées des réservations
+      */
+     @Query("SELECT r FROM Reservation r JOIN FETCH r.room rm JOIN FETCH r.user u")
+     List<Reservation> findAllWithDetails();
+ 
+     /**
+      * Requête personnalisée pour récupérer une réservation avec des détails utilisateur et salle par ID.
+      *
+      * @param id l'identifiant de la réservation
+      * @return une réservation avec ses détails
+      */
+     @Query("SELECT r FROM Reservation r JOIN FETCH r.room rm JOIN FETCH r.user u WHERE r.id = :id")
+     Optional<Reservation> findByIdWithDetails(@Param("id") Long id);
  }
+ 

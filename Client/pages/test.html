@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reservation Management</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            margin-top: 50px;
+            max-width: 600px;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            text-align: center;
+            color: #343a40;
+        }
+        .btn-primary {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Create a Reservation</h1>
+        <form id="reservationForm">
+            <!-- Room Selection -->
+            <div class="mb-3">
+                <label for="roomId" class="form-label">Room</label>
+                <select class="form-select" id="roomId" required>
+                    <option value="" disabled selected>Select a Room</option>
+                    <!-- Dynamically populate options using JavaScript -->
+                </select>
+            </div>
+            
+            <!-- User Details -->
+            <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" class="form-control" id="username" placeholder="Enter your username" required>
+            </div>
+
+            <!-- Reservation Date -->
+            <div class="mb-3">
+                <label for="date" class="form-label">Reservation Date</label>
+                <input type="date" class="form-control" id="date" required>
+            </div>
+
+            <!-- Reservation Time -->
+            <div class="row">
+                <div class="col">
+                    <label for="startTime" class="form-label">Start Time</label>
+                    <input type="time" class="form-control" id="startTime" required>
+                </div>
+                <div class="col">
+                    <label for="endTime" class="form-label">End Time</label>
+                    <input type="time" class="form-control" id="endTime" required>
+                </div>
+            </div>
+
+            <!-- Notes -->
+            <div class="mb-3">
+                <label for="notes" class="form-label">Additional Notes</label>
+                <textarea class="form-control" id="notes" rows="3" placeholder="Enter any additional details"></textarea>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-primary">Create Reservation</button>
+        </form>
+    </div>
+
+    <script>
+        // Populate room options dynamically (example)
+        const roomSelect = document.getElementById('roomId');
+        fetch('/api/rooms')
+            .then(response => response.json())
+            .then(rooms => {
+                rooms.forEach(room => {
+                    const option = document.createElement('option');
+                    option.value = room.id;
+                    option.textContent = room.name || `Room ${room.id}`;
+                    roomSelect.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error fetching rooms:', error));
+
+        // Form submission logic
+        const reservationForm = document.getElementById('reservationForm');
+        reservationForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const reservationData = {
+                roomId: document.getElementById('roomId').value,
+                username: document.getElementById('username').value,
+                date: document.getElementById('date').value,
+                startTime: document.getElementById('startTime').value,
+                endTime: document.getElementById('endTime').value,
+                notes: document.getElementById('notes').value,
+            };
+
+            fetch('/api/reservations', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(reservationData),
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert('Reservation created successfully!');
+                        reservationForm.reset();
+                    } else {
+                        response.text().then(text => alert(`Error: ${text}`));
+                    }
+                })
+                .catch(error => console.error('Error creating reservation:', error));
+        });
+    </script>
+</body>
+</html>

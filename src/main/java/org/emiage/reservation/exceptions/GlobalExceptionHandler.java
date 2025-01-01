@@ -9,11 +9,15 @@ package org.emiage.reservation.exceptions;
  * @author Dansia
  */
 
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Gestionnaire global des exceptions pour l'application de réservation.
@@ -21,67 +25,42 @@ import org.springframework.web.context.request.WebRequest;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    /**
-     * Gère les exceptions de type ReservationConflictException.
-     *
-     * @param ex      l'exception levée
-     * @param request les détails de la requête
-     * @return une réponse HTTP avec le statut CONFLICT (409)
-     */
-    @ExceptionHandler(ReservationConflictException.class)
-    public ResponseEntity<String> handleReservationConflictException(
-            ReservationConflictException ex, WebRequest request) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
+    private ResponseEntity<Map<String, String>> createErrorResponse(String message, HttpStatus status) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("status", "error");
+        errorResponse.put("message", message);
+        return new ResponseEntity<>(errorResponse, status);
     }
 
     /**
      * Gère les exceptions de type ReservationNotFoundException.
-     *
-     * @param ex      l'exception levée
-     * @param request les détails de la requête
-     * @return une réponse HTTP avec le statut NOT_FOUND (404)
      */
     @ExceptionHandler(ReservationNotFoundException.class)
-    public ResponseEntity<String> handleReservationNotFoundException(
-            ReservationNotFoundException ex, WebRequest request) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    public ResponseEntity<Map<String, String>> handleReservationNotFound(ReservationNotFoundException ex, WebRequest request) {
+        return createErrorResponse(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 
     /**
-     * Gère les exceptions de type RoomNotFoundException.
-     *
-     * @param ex      l'exception levée
-     * @param request les détails de la requête
-     * @return une réponse HTTP avec le statut NOT_FOUND (404)
+     * Gère les exceptions de type ReservationConflictException.
      */
-    @ExceptionHandler(RoomNotFoundException.class)
-    public ResponseEntity<String> handleRoomNotFoundException(
-            RoomNotFoundException ex, WebRequest request) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    @ExceptionHandler(ReservationConflictException.class)
+    public ResponseEntity<Map<String, String>> handleReservationConflict(ReservationConflictException ex, WebRequest request) {
+        return createErrorResponse(ex.getMessage(), HttpStatus.CONFLICT);
     }
 
     /**
-     * Gère les exceptions de type UserNotAuthorizedException.
-     *
-     * @param ex      l'exception levée
-     * @param request les détails de la requête
-     * @return une réponse HTTP avec le statut FORBIDDEN (403)
+     * Gère les exceptions de type InvalidApiKeyException.
      */
-    @ExceptionHandler(UserNotAuthorizedException.class)
-    public ResponseEntity<String> handleUserNotAuthorizedException(
-            UserNotAuthorizedException ex, WebRequest request) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
+    @ExceptionHandler(InvalidApiKeyException.class)
+    public ResponseEntity<Map<String, String>> handleInvalidApiKey(InvalidApiKeyException ex, WebRequest request) {
+        return createErrorResponse(ex.getMessage(), HttpStatus.FORBIDDEN);
     }
 
     /**
      * Gère les autres exceptions non spécifiées.
-     *
-     * @param ex      l'exception levée
-     * @param request les détails de la requête
-     * @return une réponse HTTP avec le statut INTERNAL_SERVER_ERROR (500)
      */
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleGlobalException(Exception ex, WebRequest request) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<Map<String, String>> handleGlobalException(Exception ex, WebRequest request) {
+        return createErrorResponse("Une erreur interne est survenue.", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
