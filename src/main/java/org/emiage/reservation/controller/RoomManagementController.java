@@ -8,7 +8,7 @@
  * @author Dansia
  */
 
- package org.emiage.reservation.controller;
+package org.emiage.reservation.controller;
 
 import org.emiage.reservation.dto.ReservationResponseDTO;
 import org.emiage.reservation.exceptions.RoomNotFoundException;

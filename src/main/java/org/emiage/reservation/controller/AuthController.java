@@ -10,32 +10,39 @@
 
  package org.emiage.reservation.controller;
 
- import org.emiage.reservation.model.User;
+ import org.emiage.reservation.dto.AuthRequest;
+ import org.emiage.reservation.dto.AuthResponse;
+ import org.emiage.reservation.utils.JWTUtils;
  import org.emiage.reservation.service.UserService;
  import org.springframework.beans.factory.annotation.Autowired;
  import org.springframework.http.ResponseEntity;
- import org.springframework.security.core.userdetails.UsernameNotFoundException;
+ import org.springframework.security.authentication.AuthenticationManager;
+ import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+ import org.springframework.security.core.userdetails.UserDetails;
  import org.springframework.web.bind.annotation.*;
  
  @RestController
- @RequestMapping("/api")
  public class AuthController {
  
-     private final UserService userService;
+     @Autowired
+     private AuthenticationManager authenticationManager;
  
      @Autowired
-     public AuthController(UserService userService) {
-         this.userService = userService;
-     }
+     private JWTUtils jwtUtils;
  
-     @PostMapping("/login")
-     public ResponseEntity<?> login(@RequestBody User loginUser) {
-         try {
-             User user = userService.authenticate(loginUser.getUsername(), loginUser.getPassword());
-             return ResponseEntity.ok(user);
-         } catch (UsernameNotFoundException ex) {
-             return ResponseEntity.status(401).body("Nom d'utilisateur ou mot de passe incorrect.");
-         }
+     @Autowired
+     private UserService userService;
+ 
+     @PostMapping("/authenticate")
+     public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthRequest authRequest) throws Exception {
+         authenticationManager.authenticate(
+                 new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword())
+         );
+ 
+         final UserDetails userDetails = userService.loadUserByUsername(authRequest.getUsername());
+         final String jwt = jwtUtils.generateToken(userDetails.getUsername());
+ 
+         return ResponseEntity.ok(new AuthResponse(jwt));
      }
  }
  
